@@ -1,0 +1,19 @@
+- name: "COMPOSER | Install"
+  composer:
+    command: install
+    working_dir: "{{ ansistrano_release_path.stdout }}"
+    optimize_autoloader: true
+
+- name: "PROJECT | Install mysql user configuration"
+  template:
+    src: deploy/templates/dbKey.j2
+    dest: "{{ ansistrano_release_path.stdout }}/config/dbKey.php"
+
+- name: "PROJECT | Install database structure"
+  shell: "mysql -u{{ mysql_user }} -p{{ mysql_pwd }} < {{ ansistrano_release_path.stdout }}/db/{{ mysql_db }}.sql"
+
+- name: "PROJECT | give right to www-data users"
+  file:
+    path: "{{ ansistrano_release_path.stdout }}"
+    owner: www-data
+    group: www-data

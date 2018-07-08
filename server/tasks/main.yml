@@ -16,6 +16,7 @@
     state=latest
   with_items:
     - apache2
+    - libapache2-mod-php
     - composer
     - mariadb-common
     - mariadb-server
@@ -95,6 +96,7 @@
     state: present
     name: "{{ item }}"
   with_items:
+    - userdir
     - rewrite
     - headers
     - mime

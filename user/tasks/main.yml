@@ -10,4 +10,15 @@
     state: present
     key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
 
+- name: "USER | Sudoers {{ server_user }}"
+  lineinfile:
+    dest: /etc/sudoers
+    state: present
+    regexp: "^{{ server_user }}"
+    line: "{{ server_user }} ALL=(ALL) NOPASSWD: ALL"
 
+- name: "USER | Add wwww-data group"
+  user:
+    name: '{{ server_user }}'
+    groups: www-data
+    append: yes
