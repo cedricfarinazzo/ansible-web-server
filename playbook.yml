@@ -24,4 +24,28 @@
         - fail2ban
         - php
         - php-fpm
+        - mariadb-common
+        - mariadb-server
+
+    - name: Enable server
+      command: systemctl enable {{ item }}
+      with_items:
+        - apache2
+        - mariadb
+
+    - name: Reboot server
+      shell: sleep 2 && shutdown -r now "Ansible reboot"
+      async: 1
+      poll: 0
+      ignore_errors: true
+
+    - name: Wait for server to come back
+      local_action: wait_for
+      args:
+        host: "{{ inventory_hostname }}"
+        port: 22
+        state: started
+        delay: 30
+        timeout: 300
+      become: false
 
