@@ -1,0 +1,15 @@
+<VirtualHost *:80>
+
+	ServerAdmin support@{{ domainname }}
+	ServerName {{ domainname }}
+	ServerAlias *.{{ domainname }}
+
+	DocumentRoot /var/www/{{ domainname }}/{{ domainroot }}
+
+        <Directory /var/www/{{ domainname }}>
+                Options -Indexes +FollowSymLinks
+                AllowOverride All
+        </Directory>
+
+</VirtualHost>
+

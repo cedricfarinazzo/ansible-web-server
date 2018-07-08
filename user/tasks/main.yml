@@ -1,0 +1,13 @@
+---
+- name: "USER | Create {{ server_user }}"
+  user:
+    name: "{{ server_user }}"
+    shell: /bin/bash
+
+- name: "USER | SSH Key"
+  authorized_key:
+    user: "{{ server_user }}"
+    state: present
+    key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
+
+

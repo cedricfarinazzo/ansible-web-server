@@ -1,0 +1,22 @@
+---
+- name: "APT | Install tools"
+  apt:
+    pkg="{{ item }}"
+    state=latest
+    update_cache=yes
+  with_items:
+    - git
+    - python
+    - vim
+    - fish
+    - curl
+
+- name: "TOOLS | vim plug"
+  shell: "curl -fLo ~/.vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim"
+
+- name: "TOOLS | vim configuration"
+  get_url:
+    url: https://raw.githubusercontent.com/Grafikart/dotfiles/master/config/vim/.vimrc
+    dest: ~/.vimrc
+    
+    

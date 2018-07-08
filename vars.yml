@@ -1,0 +1,8 @@
+---
+## variables
+mysql_root_pwd: "root"
+
+mysql_db: "domaine"
+mysql_user: "domaine"
+mysql_pwd: "domaine"
+

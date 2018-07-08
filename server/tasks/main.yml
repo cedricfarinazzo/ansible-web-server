@@ -1,0 +1,112 @@
+---
+- name: "APT | PHP install"
+  apt:
+    update_cache: yes
+    name:
+      - "php{{ php_version}}-fpm"
+      - "php{{ php_version}}-mbstring"
+      - "php{{ php_version}}-xml"
+      - "php{{ php_version}}-zip"
+      - "php{{ php_version}}-mysql"
+    state: present  
+
+- name: "APT | Install server tools"
+  apt:
+    pkg="{{ item }}"
+    state=latest
+  with_items:
+    - apache2
+    - composer
+    - mariadb-common
+    - mariadb-server
+    - python-mysqldb
+
+- name: "MYSQL | Set root password"
+  mysql_user:
+    check_implicit_admin: yes
+    login_user: root
+    login_password: "{{ mysql_root_pwd }}"
+    user: root
+    host: localhost
+    password: "{{ mysql_root_pwd }}"
+
+- name: "MYSQL | Remove anon"
+  mysql_user:
+    login_user: root
+    login_password: "{{ mysql_root_pwd }}"
+    user: ""
+    state: absent
+
+- name: "MYSQL | Remove test database"
+  mysql_db:
+    login_user: root
+    login_password: "{{ mysql_root_pwd }}"
+    db: test
+    state: absent
+
+- name: "MYSQL | Create {{ mysql_db }} database"
+  mysql_db:
+    login_user: root
+    login_password: "{{ mysql_root_pwd }}"
+    db: "{{ mysql_db }}"
+    state: present
+
+- name: "MYSQL | Create {{ mysql_user }} user"
+  mysql_user:
+    login_user: root
+    login_password: "{{ mysql_root_pwd }}"
+    name: "{{ mysql_user }}"
+    password: "{{ mysql_pwd }}"
+    host: localhost
+    priv: "{{ mysql_db }}.*:ALL"
+    state: present
+
+- name: "PHP | Change conf"
+  lineinfile:
+    dest: "/etc/php/{{ php_version }}/fpm/php.ini"
+    regexp: "^display_errors ="
+    line: "display_errors = 0"
+  notify: php restart
+
+- name: "SERVICE | Enable server"
+  command: "systemctl enable {{ item }}"
+  with_items:
+    - apache2
+    - mariadb
+
+- name: "APACHE | Add virtualhost"
+  template:
+    src: default.j2
+    dest: "/etc/apache2/sites-available/{{ domainname }}.conf"
+
+- name: "APACHE | Enable modules"
+  apache2_module:
+    state: present
+    name: "{{ item }}"
+  with_items:
+    - rewrite
+    - headers
+    - mime
+    - ratelimit
+    - deflate
+    - http2
+
+- name: "APACHE | Disable default site"
+  command: "a2dissite 000-default"
+
+- name: "APACHE | Enable site"
+  command: "a2ensite {{ domainname }}"
+
+- name: "APACHE | Reload conf && restart"
+  shell: systemctl reload apache2 && systemctl restart apache2
+
+- name: "HTTPS | Install letsencrypt"
+  git:
+    repo: https://github.com/certbot/certbot.git
+    dest: /src/certbot
+    clone: yes
+    update: yes
+
+- name: "HTTPS | Update certbot certificat"
+  shell: /src/certbot/certbot-auto renew
+

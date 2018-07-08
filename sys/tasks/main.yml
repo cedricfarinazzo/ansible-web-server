@@ -1,0 +1,11 @@
+---
+- name: "APT | Update cache system"
+  apt:
+    update_cache: yes
+
+- name: "APT | Upgrade system"
+  apt:
+    upgrade: full
+
+- name: "APT | Clear cache"
+  shell: apt-get autoremove && apt-get clean

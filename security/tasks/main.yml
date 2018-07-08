@@ -1,0 +1,9 @@
+---
+- name: "APT | Install security tools"
+  apt:
+    pkg="{{ item }}"
+    state=latest
+    update_cache=yes
+  with_items:
+    - ufw
+    - fail2ban

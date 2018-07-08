@@ -1,0 +1,11 @@
+---
+php_version: 7.2
+
+mysql_root_pwd: "root"
+
+mysql_db: "domaine"
+mysql_user: "domaine"
+mysql_pwd: "domaine"
+
+domainname: "example.com"
+domainroot: "public/"

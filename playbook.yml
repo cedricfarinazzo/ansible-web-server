@@ -1,58 +1,33 @@
 ---
-- name: Install Rpi
+- name: Install Web server
   hosts: all
   become: true
   become_method: su
   become_user: root
 
   tasks:
-    - name: Upgrade system
-      apt:
-        upgrade: full
-        update_cache: yes
+    
+    - name: "Include var"
+      include_vars:
+        file: "vars.yml"
 
-    - name: Install tools
-      apt: 
-        pkg="{{ item }}"
-        state=latest
-        update_cache=yes
+    - name: "Include roles in loop"
+      include_role:
+        name: "{{ item }}"
       with_items:
-        - git
-        - python
-        - apache2
-        - ufw
-        - fail2ban
-        - php
-        - php-fpm
-        - mariadb-common
-        - mariadb-server
+        - sys
+        - user
+        - security
+        - server
+        - tools
 
-    - name: Enable server
-      command: systemctl enable {{ item }}
-      with_items:
-        - apache2
-        - mariadb
-
-    - name: Install letsencrypt
-      git: 
-        repo: https://github.com/certbot/certbot.git
-        dest: /src/certbot
-        clone: yes
-        update: yes
-
-    - name: Update certbot certificat
-      shell: /src/certbot/certbot-auto renew
-
-    - name: Clear cache
-      shell: apt-get autoremove && apt-get clean
-
-    - name: Reboot server
+    - name: "SYS | Reboot server"
       shell: sleep 2 && shutdown -r now "Ansible reboot"
       async: 1
       poll: 0
       ignore_errors: true
 
-    - name: Wait for server to come back
+    - name: "SYS | Wait for server to come back"
       local_action: wait_for
       args:
         host: "{{ inventory_hostname }}"
