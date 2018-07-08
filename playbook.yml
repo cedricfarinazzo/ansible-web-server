@@ -1,0 +1,27 @@
+---
+- name: Install Rpi
+  hosts: all
+  become: true
+  become_method: su
+  become_user: root
+
+  tasks:
+    - name: Upgrade system
+      apt:
+        upgrade: full
+        update_cache: yes
+
+    - name: Install tools
+      apt: 
+        pkg="{{ item }}"
+        state=latest
+        update_cache=yes
+      with_items:
+        - git
+        - python
+        - apache2
+        - ufw
+        - fail2ban
+        - php
+        - php-fpm
+
