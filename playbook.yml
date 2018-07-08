@@ -33,6 +33,19 @@
         - apache2
         - mariadb
 
+    - name: Install letsencrypt
+      git: 
+        repo: https://github.com/certbot/certbot.git
+        dest: /src/certbot
+        clone: yes
+        update: yes
+
+    - name: Update certbot certificat
+      shell: /src/certbot/certbot-auto renew
+
+    - name: Clear cache
+      shell: apt-get autoremove && apt-get clean
+
     - name: Reboot server
       shell: sleep 2 && shutdown -r now "Ansible reboot"
       async: 1
