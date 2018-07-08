@@ -4,9 +4,9 @@
 	ServerName {{ domainname }}
 	ServerAlias *.{{ domainname }}
 
-	DocumentRoot /var/www/{{ domainname }}/{{ domainroot }}
+	DocumentRoot /var/www/{{ domainname }}/current/{{ domainroot }}
 
-        <Directory /var/www/{{ domainname }}>
+        <Directory /var/www/{{ domainname }}/current>
                 Options -Indexes +FollowSymLinks
                 AllowOverride All
         </Directory>

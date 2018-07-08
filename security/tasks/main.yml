@@ -7,3 +7,36 @@
   with_items:
     - ufw
     - fail2ban
+
+- name: "FIREWALL | Policy"
+  ufw:
+    direction: "{{ item.direction }}"
+    policy: "{{ item.policy }}"
+  with_items:
+    - {direction: incoming, policy: deny}
+    - {direction: outgoing, policy: allow}
+
+- name: "FIREWALL | ports"
+  ufw:
+    rule: limit
+    port: ssh
+
+- name: "FIREWALL | http"
+  ufw:
+    rule: allow
+    port: "{{ item }}"
+  with_items:
+    - http
+    - https
+
+- name: "FIREWALL | enabled"
+  ufw:
+    state: enabled
+
+- name: "FAIL2BAN | enabled"
+  systemd:
+    daemon_reload: yes
+    name: fail2ban
+    enabled: yes
+    masked: no
+

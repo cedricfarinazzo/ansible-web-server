@@ -69,7 +69,11 @@
   notify: php restart
 
 - name: "SERVICE | Enable server"
-  command: "systemctl enable {{ item }}"
+  systemd:
+    daemon_reload: yes
+    name: "{{ item }}"
+    enabled: yes
+    masked: no
   with_items:
     - apache2
     - mariadb
@@ -78,6 +82,13 @@
   template:
     src: default.j2
     dest: "/etc/apache2/sites-available/{{ domainname }}.conf"
+
+- name: "APACHE | Create domain folder"
+  file:
+    path: /var/www/{{ domainname }}
+    state: directory
+    owner: www-data
+    group: www-data
 
 - name: "APACHE | Enable modules"
   apache2_module:

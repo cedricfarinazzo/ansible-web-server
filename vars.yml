@@ -6,3 +6,16 @@ mysql_db: "domaine"
 mysql_user: "domaine"
 mysql_pwd: "domaine"
 
+git_path: "https://github.com/cedricfarinazzo/phpmvc-template.git"
+
+# ansistrano
+ansistrano_deploy_via: "git"
+ansistrano_git_repo: "{{ git_path }}"
+ansistrano_deploy_to: "/var/www/{{ domainname }}" # Base path to deploy to.
+ansistrano_version_dir: "releases" # Releases folder name
+ansistrano_current_dir: "current" # Softlink name. You should rarely changed it.
+ansistrano_current_via: "symlink" # Deployment strategy who code should be deployed to current path. Options are symlink or rsync
+ansistrano_keep_releases: 3 # Releases to keep after a new deployment. See "Pruning old releases".
+
+ansistrano_shared_paths: ['data/']
+ansistrano_shared_files: []
