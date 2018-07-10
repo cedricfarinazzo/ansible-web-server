@@ -70,6 +70,15 @@
     line: "display_errors = 0"
   notify: php restart
 
+- name: "PHP | Configure opcache"
+  copy:
+    src: "../files/10-opcache.ini"
+    dest: "/etc/php/{{ php_version }}/fpm/conf.d/10-opcache.ini"
+    owner: root
+    group: root
+    mode: u=rwx,g=rwx,o=rwx
+  notify: php restart
+
 - name: "SERVICE | Enable server"
   systemd:
     daemon_reload: yes

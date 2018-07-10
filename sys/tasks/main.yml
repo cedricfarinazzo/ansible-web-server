@@ -18,3 +18,27 @@
 
 - name: "APT | Clear cache"
   shell: apt-get autoremove && apt-get clean
+
+- name: "ZRAM | Init"
+  shell: modprobe zram num_devices=4
+
+- name: "SWAP | Create swap file"
+  command: dd if=/dev/zero of=/mnt/swap.block bs=1M count={{ common_swap_size }}
+  creates: /mnt/swap.block
+  ignore_errors: yes
+
+- name: "SWAP | Make swap"
+  command: mkswap /mnt/swap.block
+  ignore_errors: yes
+
+- name: "SWAP | Add to fstab"
+  mount:
+    name: swap
+    src: "/mnt/swap.block"
+    fstype: swap
+    state: present
+  ignore_errors: yes
+
+- name: "SWAP | Swap on"
+  command: swapon /mnt/swap.block
+  ignore_errors: yes
