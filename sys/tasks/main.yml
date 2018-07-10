@@ -7,5 +7,14 @@
   apt:
     upgrade: full
 
+- name: "APT | Install dependency package"
+  apt:
+    pkg="{{ item }}"
+    state=latest
+    update_cache=yes
+  with_items:
+    - net-tools
+    - sudo
+
 - name: "APT | Clear cache"
   shell: apt-get autoremove && apt-get clean
